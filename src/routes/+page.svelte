@@ -94,13 +94,24 @@
     {/if}
 
     <!-- Weather Display -->
-    {#if weatherData}
+    {#if loading}
+      <div class="mt-6 text-center bg-gray-50 p-8 rounded-lg shadow">
+        <div class="flex flex-col items-center justify-center">
+          <!-- Spinner -->
+          <div class="relative w-16 h-16">
+            <div class="absolute inset-0 border-4 border-blue-200 rounded-full"></div>
+            <div class="absolute inset-0 border-4 border-blue-600 rounded-full border-t-transparent animate-spin"></div>
+          </div>
+          <p class="mt-4 text-gray-600 font-medium">Fetching weather data...</p>
+        </div>
+      </div>
+    {:else if weatherData}
       <div class="mt-6 text-center bg-gray-50 p-4 rounded-lg shadow">
         <p class="text-lg font-medium text-gray-700">🌍 City: <span class="font-semibold">{weatherData.city}</span></p>
         <p class="text-4xl font-bold text-blue-600 mt-2">{weatherData.temperature}°C</p>
         <p class="text-md text-gray-600 mt-1">{weatherData.condition}</p>
       </div>
-    {:else if !loading && !error}
+    {:else if !error}
       <div class="mt-6 text-center bg-gray-50 p-4 rounded-lg shadow">
         <p class="text-gray-500">Enter a city name to see the weather</p>
       </div>
