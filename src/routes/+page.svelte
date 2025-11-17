@@ -3,6 +3,9 @@
 	let weatherData = $state<{ city: string; temperature: number; condition: string } | null>(null);
 	let loading = $state(false);
 	let error = $state('');
+	let debounceTimer: number | null = null;
+	let lastSearchTime = $state(0);
+	const DEBOUNCE_DELAY = 500; // 500ms debounce delay
 
 	async function searchWeather() {
 		if (!cityInput.trim()) {
@@ -10,6 +13,15 @@
 			return;
 		}
 
+		// Check if enough time has passed since last search
+		const now = Date.now();
+		const timeSinceLastSearch = now - lastSearchTime;
+
+		if (loading || timeSinceLastSearch < DEBOUNCE_DELAY) {
+			return; // Ignore if already loading or debounce period hasn't passed
+		}
+
+		lastSearchTime = now;
 		loading = true;
 		error = '';
 
@@ -37,7 +49,16 @@
 
 	function handleKeyPress(event: KeyboardEvent) {
 		if (event.key === 'Enter') {
-			searchWeather();
+			// Clear any existing debounce timer
+			if (debounceTimer !== null) {
+				clearTimeout(debounceTimer);
+			}
+
+			// Debounce the Enter key press
+			debounceTimer = window.setTimeout(() => {
+				searchWeather();
+				debounceTimer = null;
+			}, DEBOUNCE_DELAY);
 		}
 	}
 </script>
